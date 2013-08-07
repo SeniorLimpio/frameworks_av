@@ -4172,6 +4172,7 @@ void OMXCodec::clearCodecSpecificData() {
 status_t OMXCodec::start(MetaData *meta) {
     Mutex::Autolock autoLock(mLock);
 
+#ifdef QCOM_HARDWARE
     if(mPaused && mIsEncoder) {
         CODEC_LOGV("resume : S");
         mPaused = false;
@@ -4404,6 +4405,7 @@ status_t OMXCodec::read(
 
     Mutex::Autolock autoLock(mLock);
 
+#ifdef QCOM_HARDWARE
     if (mPaused && !mIsEncoder) {
         err = resumeLocked(false);
         if(err != OK) {
