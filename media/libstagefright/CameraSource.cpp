@@ -33,6 +33,11 @@
 #ifdef QCOM_HARDWARE
 #include "include/ExtendedUtils.h"
 #endif
+#ifdef USE_TI_CUSTOM_DOMX
+#include <OMX_TI_IVCommon.h>
+#endif
+
+#include "include/ExtendedUtils.h"
 
 namespace android {
 
