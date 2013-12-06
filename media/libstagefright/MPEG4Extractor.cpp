@@ -2440,6 +2440,8 @@ status_t MPEG4Extractor::updateAudioTrackInfoFromESDS_MPEG4Audio(
         sampleRate = br.getBits(24);
         numChannels = br.getBits(4);
     } else {
+        numChannels = br.getBits(4);
+
         if (freqIndex == 13 || freqIndex == 14) {
             return ERROR_MALFORMED;
         }
