@@ -1917,7 +1917,7 @@ status_t AwesomePlayer::initAudioDecoder() {
     mAudioTrack->getFormat()->findInt64(kKeyDuration, &durationUs);
 
     if (!mOffloadAudio && mAudioSource != NULL) {
-        ALOGI("Could not offload audio decode, try pcm offload");
+        ALOGW("Could not offload audio decode, try pcm offload");
         sp<MetaData> format = mAudioSource->getFormat();
         if (durationUs >= 0) {
             format->setInt64(kKeyDuration, durationUs);
