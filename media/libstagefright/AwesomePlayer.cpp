@@ -1771,7 +1771,7 @@ status_t AwesomePlayer::initAudioDecoder() {
         streamType = mAudioSink->getAudioStreamType();
     }
 
-    mOffloadAudio = canOffloadStream(meta, (mVideoSource != NULL),
+    mOffloadAudio = canOffloadStream(meta, (mVideoSource != NULL), vMeta,
                                      isStreamingHTTP(), streamType);
 
 #ifdef QCOM_DIRECTTRACK
