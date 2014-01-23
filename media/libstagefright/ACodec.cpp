@@ -373,6 +373,7 @@ ACodec::ACodec()
       mIsEncoder(false),
       mUseMetadataOnEncoderOutput(false),
       mShutdownInProgress(false),
+      mIsConfiguredForAdaptivePlayback(false),
       mEncoderDelay(0),
       mEncoderPadding(0),
       mChannelMaskPresent(false),
@@ -1169,6 +1170,7 @@ status_t ACodec::configureCodec(
             obj != NULL;
     mStoreMetaDataInOutputBuffers = false;
     bool bAdaptivePlaybackMode = false;
+    mIsConfiguredForAdaptivePlayback = false;
     if (!encoder && video && haveNativeWindow) {
         int32_t preferAdaptive = 0;
         if (msg->findInt32("prefer-adaptive-playback", &preferAdaptive)
@@ -1223,6 +1225,7 @@ status_t ACodec::configureCodec(
                         "[%s] prepareForAdaptivePlayback failed w/ err %d",
                         mComponentName.c_str(), err);
                 bAdaptivePlaybackMode = (err == OK);
+                mIsConfiguredForAdaptivePlayback = (err == OK);
             }
             // if Adaptive mode was tried first and codec failed it, try dynamic mode
             if (err != OK && preferAdaptive) {
@@ -1231,12 +1234,14 @@ status_t ACodec::configureCodec(
                     ALOGE("[%s] storeMetaDataInBuffers failed w/ err %d",
                           mComponentName.c_str(), err);
                 }
+                mIsConfiguredForAdaptivePlayback = (err == OK);
             }
             // allow failure
             err = OK;
         } else {
             ALOGV("[%s] storeMetaDataInBuffers succeeded", mComponentName.c_str());
             mStoreMetaDataInOutputBuffers = true;
+            mIsConfiguredForAdaptivePlayback = true;
         }
 
         ALOGI("DRC Mode: %s",(mStoreMetaDataInOutputBuffers ? "Dynamic Buffer Mode" :
@@ -3859,6 +3864,7 @@ void ACodec::LoadedState::stateEntered() {
     mCodec->mDequeueCounter = 0;
     mCodec->mMetaDataBuffersToSubmit = 0;
     mCodec->mRepeatFrameDelayUs = -1ll;
+    mCodec->mIsConfiguredForAdaptivePlayback = false;
 
     if (mCodec->mShutdownInProgress) {
         bool keepComponentAllocated = mCodec->mKeepComponentAllocated;
