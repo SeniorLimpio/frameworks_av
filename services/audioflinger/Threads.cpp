@@ -3816,12 +3816,9 @@ AudioFlinger::PlaybackThread::mixer_state AudioFlinger::DirectOutputThread::prep
                 if (--(track->mRetryCount) <= 0) {
                     ALOGV("BUFFER TIMEOUT: remove(%d) from active list", track->name());
                     tracksToRemove->add(track);
-<<<<<<< HEAD
-=======
                     // indicate to client process that the track was disabled because of underrun;
                     // it will then automatically call start() when data is available
 #if defined(QCOM_HARDWARE) && !defined(QCOM_DIRECTTRACK)
->>>>>>> 51e6ed3... audio: Add support for tunnel mode recording and compress voip
                     android_atomic_or(CBLK_DISABLED, &cblk->mFlags);
 #endif
                 } else if (last) {
