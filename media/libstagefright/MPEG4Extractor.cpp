@@ -2418,11 +2418,13 @@ status_t MPEG4Extractor::updateAudioTrackInfoFromESDS_MPEG4Audio(
         objectType = 32 + br.getBits(6);
     }
 
+#ifdef QCOM_DIRECTTRACK
     if(objectType == 1) { //AAC Main profile
         ALOGD("\n >>> Found AAC mainprofile in MPEG4 Extractor... \n");
     }
 
     mLastTrack->meta->setInt32(kKeyAACProfile, objectType);
+#endif
 
     //keep AOT type
     mLastTrack->meta->setInt32(kKeyAACAOT, objectType);
@@ -2445,12 +2447,6 @@ status_t MPEG4Extractor::updateAudioTrackInfoFromESDS_MPEG4Audio(
         if (freqIndex == 13 || freqIndex == 14) {
             return ERROR_MALFORMED;
         }
-        numChannels = br.getBits(4);
-        sampleRate = kSamplingRate[freqIndex];
-    }
-    if (objectType == 5 || objectType == 29) {
-        // SBR specific config per 14496-3 table 1.13
-        freqIndex = br.getBits(4);
 
         sampleRate = kSamplingRate[freqIndex];
     }
