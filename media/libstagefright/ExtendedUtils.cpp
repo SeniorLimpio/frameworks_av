@@ -518,7 +518,17 @@ void ExtendedUtils::helper_addMediaCodec(Vector<MediaCodecList::CodecInfo> &mCod
     info->mName = name;
     info->mIsEncoder = encoder;
     ssize_t index = mTypes.indexOfKey(type);
-    uint32_t bit = mTypes.valueAt(index);
+    uint32_t bit;
+    if(index < 0) {
+         bit = mTypes.size();
+         if (bit == 64) {
+             ALOGW("Too many distinct type names in configuration.");
+             return;
+         }
+         mTypes.add(name, bit);
+    } else {
+        bit = mTypes.valueAt(index);
+    }
     info->mTypes |= 1ul << bit;
     info->mQuirks = quirks;
 }
