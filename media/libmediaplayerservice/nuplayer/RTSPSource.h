@@ -79,6 +79,7 @@ private:
     enum Flags {
         // Don't log any URLs.
         kFlagIncognito = 1,
+        kFlagUseTCP = 2,
     };
 
     struct TrackInfo {
