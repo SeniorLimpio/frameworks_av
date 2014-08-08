@@ -591,6 +591,14 @@ bool canOffloadStream(const sp<MetaData>& meta, bool hasVideo, const sp<MetaData
 
     audio_offload_info_t info = AUDIO_INFO_INITIALIZER;
 
+    int32_t bitWidth = 16;
+#ifdef ENABLE_AV_ENHANCEMENTS
+    if (!meta->findInt32(kKeySampleBits, &bitWidth)) {
+        ALOGV("bits per sample not set, using default %d", bitWidth);
+    }
+#endif
+    info.bit_width = bitWidth;
+
     info.format = AUDIO_FORMAT_INVALID;
     if (mapMimeToAudioFormat(info.format, mime) != OK) {
         ALOGE(" Couldn't map mime type \"%s\" to a valid AudioSystem::audio_format !", mime);
@@ -598,14 +606,13 @@ bool canOffloadStream(const sp<MetaData>& meta, bool hasVideo, const sp<MetaData
     } else {
 #ifdef QCOM_HARDWARE
         // Override audio format for PCM offload
-        if (info.format == AUDIO_FORMAT_PCM_24_BIT || info.bit_width == 24) {
+        if (bitWidth == 24) {
             ALOGD("24-bit PCM offload enabled");
             info.format = AUDIO_FORMAT_PCM_24_BIT_OFFLOAD;
         } else if (info.format == AUDIO_FORMAT_PCM_16_BIT) {
             info.format = AUDIO_FORMAT_PCM_16_BIT_OFFLOAD;
         }
 #endif
-        ALOGV("Mime type \"%s\" mapped to audio_format %d", mime, info.format);
     }
 
     if (AUDIO_FORMAT_INVALID == info.format) {
@@ -614,7 +621,9 @@ bool canOffloadStream(const sp<MetaData>& meta, bool hasVideo, const sp<MetaData
         return false;
     }
 
-    // check whether it is ELD/LD content -> no offloading
+    ALOGV("Mime type \"%s\" mapped to audio_format %d", mime, info.format);
+
+    // check whether it is ELD/LD/main content -> no offloading
     // FIXME: this should depend on audio DSP capabilities. mapMimeToAudioFormat() should use the
     // metadata to refine the AAC format and the audio HAL should only list supported profiles.
     int32_t aacaot = -1;
@@ -656,14 +665,6 @@ bool canOffloadStream(const sp<MetaData>& meta, bool hasVideo, const sp<MetaData
         ALOGV("track of type '%s' does not publish bitrate", mime);
      }
     info.bit_rate = brate;
-
-    int32_t bitWidth = 16;
-#ifdef ENABLE_AV_ENHANCEMENTS
-    if (!meta->findInt32(kKeySampleBits, &bitWidth)) {
-        ALOGV("bits per sample not set, using default %d", bitWidth);
-    }
-#endif
-    info.bit_width = bitWidth;
 
     info.stream_type = streamType;
     info.has_video = hasVideo;
