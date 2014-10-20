@@ -1926,7 +1926,9 @@ status_t AwesomePlayer::initAudioDecoder() {
             mAudioSource = mAudioTrack;
 #ifndef QCOM_DIRECTTRACK
         } else {
-            mOmxSource->getFormat()->setInt32(kKeySampleBits, 16);
+            if (mOmxSource != NULL) {
+                mOmxSource->getFormat()->setInt32(kKeySampleBits, 16);
+            }
             mAudioSource = mOmxSource;
 #endif
         }
